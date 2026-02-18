@@ -25,14 +25,20 @@ Open CMD as Administrator:
 wsl --install -d Ubuntu
 ```
 
+![Install WSL & Ubuntu](screenshots/img1.png)
+
 Reboot when prompted. Ubuntu will launch automatically to set up your username and password.
 
 ### Phase 2: Install Docker Desktop
 
 1. Download from [docker.com](https://docker.com)
 2. During installation ensure **"Use WSL 2 instead of Hyper-V"** is checked
+
+![Install Docker Desktop](screenshots/img2.png)
+
 3. After installation, log out and back in to Windows
 4. Open Docker Desktop → Settings → Resources → WSL Integration → Enable **Ubuntu** → Apply & Restart
+
 
 ### Phase 3: Free Up Port 53
 
@@ -257,8 +263,13 @@ rmdir /s /q C:\pihole-unbound
 - **Extra blocklists:** [https://firebog.net/](https://firebog.net/)
 - **Ad-block test:** [https://adblock.turtlecute.org](https://adblock.turtlecute.org)
 - **Portability:** DNS stays at 127.0.0.1 regardless of WiFi network
-- **Pi-hole v6 config:** `docker exec pihole pihole-FTL --config`
+- **View all Pi-hole v6 config:** `docker exec pihole pihole-FTL --config`
 
+![Pihole Dashboard](screenshots/img3.png)
+
+![AdBlock Test Tool](screenshots/img5.png)
+
+![AdBlock List Updated](screenshots/img6.png)
 ## License
 
 MIT
