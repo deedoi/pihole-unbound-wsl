@@ -1,0 +1,12 @@
+# Pi-hole persistent data
+etc-pihole/
+etc-dnsmasq.d/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
