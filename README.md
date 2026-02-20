@@ -2,6 +2,44 @@
 
 Setting up Pi-hole with Unbound in Docker on WSL turns your Windows PC into a powerful ad-blocking and privacy hub for your entire network. You'll enjoy faster, cleaner browsing everywhere by blocking ads and trackers, while Unbound keeps your DNS queries private and speedy.
 
+## 🚀 Very Quick Setup (Using Pre-configured Image)
+
+If you want to skip manual configuration, you can use this pre-configured Unbound image.
+
+1.  **Create a folder:** `mkdir C:\pihole-unbound && cd C:\pihole-unbound`
+2.  **Create `docker-compose.yml`** with this content:
+
+```yaml
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8053:80/tcp"
+    environment:
+      TZ: Asia/Bangkok
+      WEBPASSWORD: SecurePass123!
+      PIHOLE_DNS_: "127.0.0.1#5335"
+    volumes:
+      - ./etc-pihole:/etc/pihole
+      - ./etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+
+  unbound:
+    container_name: unbound
+    image: deedoi30/pihole-unbound:v1
+    network_mode: "service:pihole"
+    restart: unless-stopped
+```
+
+3.  **Run:** `docker compose up -d`
+
+---
+
 ## Features
 
 - **Ad blocking** via Pi-hole v6

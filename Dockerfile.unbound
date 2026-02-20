@@ -1,0 +1,8 @@
+FROM mvance/unbound:latest
+
+# Copy custom configuration files
+COPY unbound.conf /opt/unbound/etc/unbound/unbound.conf
+COPY root.hints /opt/unbound/etc/unbound/root.hints
+
+# Ensure correct permissions
+RUN chmod 644 /opt/unbound/etc/unbound/unbound.conf && chmod 644 /opt/unbound/etc/unbound/root.hints
