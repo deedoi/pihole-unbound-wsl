@@ -56,8 +56,58 @@ services:
 
 ## Quick Start
 
-### Phase 1: Install WSL & Ubuntu
+Choose one of the two methods below to get started. **Method A** is recommended for most users as it's faster and less prone to configuration errors.
 
+### Method A: Using Pre-configured Image (Recommended)
+
+This method uses the pre-built image `deedoi30/pihole-unbound:v1` which already includes the optimized `unbound.conf` and `root.hints`.
+
+1.  **Phase 1 & 2:** Complete WSL2 and Docker Desktop installation as described above.
+2.  **Phase 3:** Free up Port 53 using the commands provided earlier.
+3.  **Phase 4: Create Project Folder**
+    ```cmd
+    mkdir C:\pihole-unbound
+    cd C:\pihole-unbound
+    mkdir etc-pihole etc-dnsmasq.d
+    ```
+4.  **Phase 5: Create `docker-compose.yml`**
+    Use the following content (no extra config files needed!):
+    ```yaml
+    services:
+      pihole:
+        container_name: pihole
+        image: pihole/pihole:latest
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "8053:80/tcp"
+        environment:
+          TZ: Asia/Bangkok
+          WEBPASSWORD: SecurePass123!
+          PIHOLE_DNS_: "127.0.0.1#5335"
+        volumes:
+          - ./etc-pihole:/etc/pihole
+          - ./etc-dnsmasq.d:/etc/dnsmasq.d
+        restart: unless-stopped
+        cap_add:
+          - NET_ADMIN
+
+      unbound:
+        container_name: unbound
+        image: deedoi30/pihole-unbound:v1
+        network_mode: "service:pihole"
+        restart: unless-stopped
+    ```
+5.  **Phase 6: Start and Configure**
+    Proceed to [Start the Stack](#phase-5-start-the-stack), [Enable DNSSEC](#phase-6-enable-dnssec-critical), and [Configure Pi-hole Web Admin](#phase-7-configure-pi-hole-web-admin).
+
+---
+
+### Method B: Manual Configuration
+
+Use this method if you want to customize your Unbound configuration or use the official `mvance/unbound` image.
+
+#### Phase 1: Install WSL & Ubuntu
 Open CMD as Administrator:
 ```bash
 wsl --install -d Ubuntu
@@ -67,7 +117,7 @@ wsl --install -d Ubuntu
 
 Reboot when prompted. Ubuntu will launch automatically to set up your username and password.
 
-### Phase 2: Install Docker Desktop
+#### Phase 2: Install Docker Desktop
 
 1. Download from [docker.com](https://docker.com)
 2. During installation ensure **"Use WSL 2 instead of Hyper-V"** is checked
@@ -78,7 +128,7 @@ Reboot when prompted. Ubuntu will launch automatically to set up your username a
 4. Open Docker Desktop → Settings → Resources → WSL Integration → Enable **Ubuntu** → Apply & Restart
 
 
-### Phase 3: Free Up Port 53
+#### Phase 3: Free Up Port 53
 
 Windows 11 reserves port 53 for Internet Connection Sharing. Disable it:
 ```cmd
@@ -89,7 +139,7 @@ sc config SharedAccess start=disabled
 
 ⚠️ **Note:** This disables Windows Mobile Hotspot.
 
-### Phase 4: Create Project Files
+#### Phase 4: Create Project Files
 ```cmd
 mkdir C:\pihole-unbound
 cd C:\pihole-unbound
@@ -103,7 +153,7 @@ curl -o root.hints https://www.internic.net/domain/named.root
 
 Create `docker-compose.yml` and `unbound.conf` (see [Files](#files) section below).
 
-### Phase 5: Start the Stack
+#### Phase 5: Start the Stack
 ```cmd
 docker compose up -d
 ```
@@ -186,11 +236,16 @@ services:
 
   unbound:
     container_name: unbound
-    image: mvance/unbound:latest
+    # Option A: Pre-configured Image (Recommended)
+    image: deedoi30/pihole-unbound:v1
+    
+    # Option B: Manual Configuration
+    # image: mvance/unbound:latest
+    # volumes:
+    #   - ./unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+    #   - ./root.hints:/opt/unbound/etc/unbound/root.hints:ro
+
     network_mode: "service:pihole"
-    volumes:
-      - ./unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
-      - ./root.hints:/opt/unbound/etc/unbound/root.hints:ro
     restart: unless-stopped
 ```
 
@@ -292,7 +347,7 @@ Warnings about `so-rcvbuf` and `so-sndbuf` are harmless in WSL2/Docker. They don
 ```cmd
 cd C:\pihole-unbound
 docker compose down -v
-docker rmi pihole/pihole:latest mvance/unbound:latest
+docker rmi pihole/pihole:latest mvance/unbound:latest deedoi30/pihole-unbound:v1
 rmdir /s /q C:\pihole-unbound
 ```
 

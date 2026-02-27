@@ -20,9 +20,10 @@ services:
  
     unbound:
         container_name: unbound
-        image: mvance/unbound:latest
+        # image: mvance/unbound:latest # Manual configuration option
+        image: deedoi30/pihole-unbound:v1 # Pre-configured image
         network_mode: "service:pihole"
-        volumes:
-            - ./unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
-            - ./root.hints:/opt/unbound/etc/unbound/root.hints:ro
+        # volumes: # Manual configuration volumes
+        #    - ./unbound.conf:/opt/unbound/etc/unbound/unbound.conf:ro
+        #    - ./root.hints:/opt/unbound/etc/unbound/root.hints:ro
         restart: unless-stopped
